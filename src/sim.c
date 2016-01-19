@@ -29,7 +29,7 @@ uint32_t dcd_imm;    /* decoded immediate value */
 uint32_t dcd_target; /* decoded target address */
 int      dcd_se_imm; /* decoded sign-extended immediate value */
 uint32_t inst;       /* machine instruction */
-
+int64_t prod;
 
 uint32_t sign_extend_b2w(uint8_t c)
 {
