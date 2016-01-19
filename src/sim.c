@@ -295,13 +295,37 @@ void process_instruction()
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
       case OP_LB:
+      NEXT_STATE.REGS[dcd_rt] = sign_extend_b2w((mem_read_32(CURRENT_STATE.REGS[dcd_rs] + dcd_se_imm)) & 0xFF);
+    NEXT_STATE.PC = CURRENT_STATE.PC + 4;
+    break;
       case OP_LH:
+      NEXT_STATE.REGS[dcd_rt] = sign_extend_b2w((mem_read_32(CURRENT_STATE.REGS[dcd_rs] + dcd_se_imm)) & 0xFFFF);
+    NEXT_STATE.PC = CURRENT_STATE.PC + 4;
+    break;
       case OP_LW:
+      NEXT_STATE.REGS[dcd_rt] = mem_read_32(CURRENT_STATE.REGS[dcd_rs] + dcd_se_imm);
+    NEXT_STATE.PC = CURRENT_STATE.PC + 4;
+    break;
       case OP_LBU:
+      NEXT_STATE.REGS[dcd_rt] = zero_extend_b2w((mem_read_32(CURRENT_STATE.REGS[dcd_rs] + dcd_se_imm)) & 0xFF);
+    NEXT_STATE.PC = CURRENT_STATE.PC + 4;
+    break;
       case OP_LHU:
+      NEXT_STATE.REGS[dcd_rt] = zero_extend_h2w((mem_read_32(CURRENT_STATE.REGS[dcd_rs] + dcd_se_imm)) & 0xFFFF);
+    NEXT_STATE.PC = CURRENT_STATE.PC + 4;
+    break;
       case OP_SB:
+      mem_write_32((CURRENT_STATE.REGS[dcd_rs] + dcd_se_imm),(mem_read_32(CURRENT_STATE.REGS[dcd_rt]) & 0xFF));
+    NEXT_STATE.PC = CURRENT_STATE.PC + 4;
+    break;
       case OP_SH:
+      mem_write_32((CURRENT_STATE.REGS[dcd_rs] + dcd_se_imm),(mem_read_32(CURRENT_STATE.REGS[dcd_rt]) & 0xFFFF));
+    NEXT_STATE.PC = CURRENT_STATE.PC + 4;
+    break;
       case OP_SW:
+      mem_write_32((CURRENT_STATE.REGS[dcd_rs] + dcd_se_imm), mem_read_32(CURRENT_STATE.REGS[dcd_rt]));
+    NEXT_STATE.PC = CURRENT_STATE.PC + 4;
+    break;
 
 /*** specify the remaining dcd_op cases above this line ***/
 /*********************************************************/
