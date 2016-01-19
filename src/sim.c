@@ -270,9 +270,12 @@ void process_instruction()
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
       case OP_J:
-          CURRENT_STATE.PC >> 28(dcd_target << 2)
+    NEXT_STATE.PC = (CURRENT_STATE.PC & 0xF0000000) | (dcd_target << 2);
+    break;
       case OP_JAL:
-          (dcd_target << 2)
+        NEXT_STATE.REGS[31] = CURRENT_STATE.PC + 4;
+    NEXT_STATE.PC = (CURRENT_STATE.PC & 0xF0000000) | (dcd_target << 2);
+    break;
       case OP_BEQ:
     if (dcd_rs==dcd_rt)
        NEXT_STATE.PC = CURRENT_STATE.PC + (dcd_imm << 2);
