@@ -235,97 +235,134 @@ void process_instruction()
       } /* switch (dcd_funct) */
     } /* case OP_SPECIAL */
     break;
-      case OP_ADDI:
-      case OP_ADDIU:
+  case OP_ADDI:
+  case OP_ADDIU:
     if (dcd_rt!=0)
       NEXT_STATE.REGS[dcd_rt] = CURRENT_STATE.REGS[dcd_rs] + dcd_se_imm;
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
 /**********************************************************/
 /*** specify the remaining dcd_op cases below this line ***/
-          
-      case OP_SLTI:
+  case OP_BRSPEC: /* special branches */
+    {
+      case BROP_BLTZ:  
+       if(dcd_rs<0)
+         NEXT_STATE.PC = CURRENT_STATE.PC + (dcd_imm<<2)
+       else
+         NEXT_STATE.PC = CURRENT_STATE.PC + 4
+      break;
+      case BROP_BGEZ:
+       if(dcd_rs>=0)
+         NEXT_STATE.PC = CURRENT_STATE.PC + (dcd_imm<<2)
+       else
+         NEXT_STATE.PC = CURRENT_STATE.PC + 4
+      break;
+      case BROP_BLTZAL: 
+       if(dcd_rs<0)
+         NEXT_STATE.PC = CURRENT_STATE.PC + (dcd_imm<<2)
+         NEXT_STATE.REGS[31] = CURRENT_STATE.PC + 4;
+       else
+         NEXT_STATE.PC = CURRENT_STATE.PC + 4
+      break;
+      case BROP_BGEZAL:
+       if(dcd_rs>=0)
+         NEXT_STATE.PC = CURRENT_STATE.PC + (dcd_imm<<2)
+         NEXT_STATE.REGS[31] = CURRENT_STATE.PC + 4;
+       else
+         NEXT_STATE.PC = CURRENT_STATE.PC + 4
+      break;
+    }/* special branches */
+    break;
+  case OP_SLTI:
     if (dcd_rt!=0)
       NEXT_STATE.REGS[dcd_rt] = (((int) CURRENT_STATE.REGS[dcd_rs] < dcd_se_imm) ? 1 : 0);
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
-      case OP_SLTIU:
+  case OP_SLTIU:
     if (dcd_rt!=0)
        NEXT_STATE.REGS[dcd_rt] = ((CURRENT_STATE.REGS[dcd_rs] < dcd_se_imm) ? 1 : 0);
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
-      case OP_ANDI:
+  case OP_ANDI:
     if (dcd_rt!=0)
        NEXT_STATE.REGS[dcd_rt] = (CURRENT_STATE.REGS[dcd_rs] & zero_extend_h2w(dcd_imm));
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
-      case OP_ORI:
+  case OP_ORI:
     if (dcd_rt!=0)
        NEXT_STATE.REGS[dcd_rt] = (CURRENT_STATE.REGS[dcd_rs] | zero_extend_h2w(dcd_imm));
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
-      case OP_XORI:
+  case OP_XORI:
     if (dcd_rt!=0)
        NEXT_STATE.REGS[dcd_rt] = (CURRENT_STATE.REGS[dcd_rs] ^ zero_extend_h2w(dcd_imm));
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
-      case OP_J:
+  case OP_J:
     NEXT_STATE.PC = (CURRENT_STATE.PC & 0xF0000000) | (dcd_target << 2);
     break;
-      case OP_JAL:
+  case OP_JAL:
         NEXT_STATE.REGS[31] = CURRENT_STATE.PC + 4;
     NEXT_STATE.PC = (CURRENT_STATE.PC & 0xF0000000) | (dcd_target << 2);
     break;
-      case OP_BEQ:
+  case OP_BEQ:
     if (dcd_rs==dcd_rt)
        NEXT_STATE.PC = CURRENT_STATE.PC + (dcd_imm << 2);
+    else
+       NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
-      case OP_BNE:
+  case OP_BNE:
     if (dcd_rs!=dcd_rt)
        NEXT_STATE.PC = CURRENT_STATE.PC + (dcd_imm << 2);
+    else
+       NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
-      case OP_BLEZ:
+  case OP_BLEZ:
     if (dcd_rs<=0)
        NEXT_STATE.PC = CURRENT_STATE.PC + (dcd_imm << 2);
+    else
+       NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
-      case OP_BGTZ:
+  case OP_BGTZ:
     if (dcd_rs>0)
        NEXT_STATE.PC = CURRENT_STATE.PC + (dcd_imm << 2);
+    else
+       NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
-      case OP_LUI:
+  case OP_LUI:
     if (dcd_rt!=0)
       NEXT_STATE.REGS[dcd_rt] = (dcd_imm << 16);
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
-      case OP_LB:
+  case OP_LB:
       NEXT_STATE.REGS[dcd_rt] = sign_extend_b2w((mem_read_32(CURRENT_STATE.REGS[dcd_rs] + dcd_se_imm)) & 0xFF);
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
-      case OP_LH:
+  case OP_LH:
       NEXT_STATE.REGS[dcd_rt] = sign_extend_b2w((mem_read_32(CURRENT_STATE.REGS[dcd_rs] + dcd_se_imm)) & 0xFFFF);
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
-      case OP_LW:
+  case OP_LW:
       NEXT_STATE.REGS[dcd_rt] = mem_read_32(CURRENT_STATE.REGS[dcd_rs] + dcd_se_imm);
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
-      case OP_LBU:
+  case OP_LBU:
       NEXT_STATE.REGS[dcd_rt] = zero_extend_b2w((mem_read_32(CURRENT_STATE.REGS[dcd_rs] + dcd_se_imm)) & 0xFF);
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
-      case OP_LHU:
+  case OP_LHU:
       NEXT_STATE.REGS[dcd_rt] = zero_extend_h2w((mem_read_32(CURRENT_STATE.REGS[dcd_rs] + dcd_se_imm)) & 0xFFFF);
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
-      case OP_SB:
+  case OP_SB:
       mem_write_32((CURRENT_STATE.REGS[dcd_rs] + dcd_se_imm),(mem_read_32(CURRENT_STATE.REGS[dcd_rt]) & 0xFF));
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
-      case OP_SH:
+  case OP_SH:
       mem_write_32((CURRENT_STATE.REGS[dcd_rs] + dcd_se_imm),(mem_read_32(CURRENT_STATE.REGS[dcd_rt]) & 0xFFFF));
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
-      case OP_SW:
+  case OP_SW:
       mem_write_32((CURRENT_STATE.REGS[dcd_rs] + dcd_se_imm), mem_read_32(CURRENT_STATE.REGS[dcd_rt]));
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
