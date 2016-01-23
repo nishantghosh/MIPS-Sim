@@ -259,16 +259,18 @@ void process_instruction()
          NEXT_STATE.PC = CURRENT_STATE.PC + 4;
       break;
       case BROP_BLTZAL: 
-       if(dcd_rs<0)
+       if(dcd_rs<0){
          NEXT_STATE.PC = CURRENT_STATE.PC + (dcd_imm<<2);
          NEXT_STATE.REGS[31] = CURRENT_STATE.PC + 4;
+        }
        else
          NEXT_STATE.PC = CURRENT_STATE.PC + 4;
       break;
       case BROP_BGEZAL:
-       if(dcd_rs>=0)
+       if(dcd_rs>=0){
          NEXT_STATE.PC = CURRENT_STATE.PC + (dcd_imm<<2);
          NEXT_STATE.REGS[31] = CURRENT_STATE.PC + 4;
+       }
        else
          NEXT_STATE.PC = CURRENT_STATE.PC + 4;
       break;
