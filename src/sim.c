@@ -245,6 +245,7 @@ void process_instruction()
 /*** specify the remaining dcd_op cases below this line ***/
   case OP_BRSPEC: /* special branches */
     {
+      switch (dcd_rt) {
       case BROP_BLTZ:  
        if(dcd_rs<0)
          NEXT_STATE.PC = CURRENT_STATE.PC + (dcd_imm<<2);
@@ -271,6 +272,7 @@ void process_instruction()
        else
          NEXT_STATE.PC = CURRENT_STATE.PC + 4;
       break;
+      }
     }/* special branches */
     break;
   case OP_SLTI:
