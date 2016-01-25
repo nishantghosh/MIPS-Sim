@@ -298,7 +298,7 @@ void process_instruction()
       switch (dcd_rt) {
       //Branch on Less than Zero
       case BROP_BLTZ:  
-       if(dcd_rs<0)
+       if(CURRENT_STATE[dcd_rs]<0)
          NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b();
        else
          NEXT_STATE.PC = CURRENT_STATE.PC + 4;
@@ -306,7 +306,7 @@ void process_instruction()
       
       //Branch if Greater than or equal to Zero
       case BROP_BGEZ:
-       if(dcd_rs>=0)
+       if(CURRENT_STATE[dcd_rs]>=0)
          NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b();
        else
          NEXT_STATE.PC = CURRENT_STATE.PC + 4;
@@ -314,7 +314,7 @@ void process_instruction()
       
       //Branch on Less Than Zero and Link
       case BROP_BLTZAL: 
-       if(dcd_rs<0){
+       if(CURRENT_STATE[dcd_rs]<0){
          NEXT_STATE.REGS[31] = CURRENT_STATE.PC + 4;
          NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b();
         }
@@ -324,7 +324,7 @@ void process_instruction()
       
       //Branch on Greater Than or Equal to Zero and Link
       case BROP_BGEZAL:
-       if(dcd_rs>=0){
+       if(CURRENT_STATE[dcd_rs]>=0){
          NEXT_STATE.REGS[31] = CURRENT_STATE.PC + 4;
          NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b();
        }
@@ -337,35 +337,30 @@ void process_instruction()
     
   //Set on Less Than Immediate
   case OP_SLTI:
-    if (dcd_rt!=0)
       NEXT_STATE.REGS[dcd_rt] = (((int) CURRENT_STATE.REGS[dcd_rs] < (int) dcd_se_imm) ? 1 : 0);
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
   
   //Set on Less Than Immediate Unsigned
   case OP_SLTIU:
-    if (dcd_rt!=0)
        NEXT_STATE.REGS[dcd_rt] = ((CURRENT_STATE.REGS[dcd_rs] < dcd_se_imm) ? 1 : 0);
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
     
   //AND with immidiate
   case OP_ANDI:
-    if (dcd_rt!=0)
        NEXT_STATE.REGS[dcd_rt] = (CURRENT_STATE.REGS[dcd_rs] & zero_extend_h2w(dcd_imm));
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
   
   //OR with immidiate
   case OP_ORI:
-    if (dcd_rt!=0)
        NEXT_STATE.REGS[dcd_rt] = (CURRENT_STATE.REGS[dcd_rs] | zero_extend_h2w(dcd_imm));
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
     
   //XOR with immidiate
   case OP_XORI:
-    if (dcd_rt!=0)
        NEXT_STATE.REGS[dcd_rt] = (CURRENT_STATE.REGS[dcd_rs] ^ zero_extend_h2w(dcd_imm));
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
@@ -383,34 +378,30 @@ void process_instruction()
     
   //Branch if Equal
   case OP_BEQ:
+    NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     if (CURRENT_STATE.REGS[dcd_rs]==CURRENT_STATE.REGS[dcd_rt])
        NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b();
-    else
-       NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
   
   //Branch if not equal
   case OP_BNE:
+    NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     if (CURRENT_STATE.REGS[dcd_rs]!=CURRENT_STATE.REGS[dcd_rt])
        NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b();
-    else
-       NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
     
   //Branch if less than equal to Zero
   case OP_BLEZ:
+    NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     if (CURRENT_STATE.REGS[dcd_rs]<=0)
        NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b();
-    else
-       NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
     
   //branch if Greater than Zero
   case OP_BGTZ:
+    NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     if (CURRENT_STATE.REGS[dcd_rs]>0)
        NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b();
-    else
-       NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
     
   //Load Upper Immediate
