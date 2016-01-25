@@ -317,6 +317,9 @@ void process_instruction()
        if(CURRENT_STATE.REGS[dcd_rs]<0){
          NEXT_STATE.PC = NEXT_STATE.PC + sign_extend_18b();
         }
+       else {
+       NEXT_STATE.PC = NEXT_STATE.PC + 4;
+        }
       break;
       
       //Branch on Greater Than or Equal to Zero and Link
@@ -326,6 +329,9 @@ void process_instruction()
        if(CURRENT_STATE.REGS[dcd_rs]>=0){
          NEXT_STATE.PC = NEXT_STATE.PC + sign_extend_18b();
        }
+       else {
+       NEXT_STATE.PC = NEXT_STATE.PC + 4;
+        }
       break;
       }
     }/* special branches */
