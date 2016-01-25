@@ -387,21 +387,21 @@ void process_instruction()
   case OP_BNE:
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     if (CURRENT_STATE.REGS[dcd_rs]!=CURRENT_STATE.REGS[dcd_rt])
-       NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b();
+       NEXT_STATE.PC = NEXT_STATE.PC + sign_extend_18b();
     break;
     
   //Branch if less than equal to Zero
   case OP_BLEZ:
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     if (CURRENT_STATE.REGS[dcd_rs]<=0)
-       NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b();
+       NEXT_STATE.PC = NEXT_STATE.PC + sign_extend_18b();
     break;
     
   //branch if Greater than Zero
   case OP_BGTZ:
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     if (CURRENT_STATE.REGS[dcd_rs]>0)
-       NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b();
+       NEXT_STATE.PC = NEXT_STATE.PC + sign_extend_18b();
     break;
     
   //Load Upper Immediate
