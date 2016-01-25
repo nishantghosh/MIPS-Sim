@@ -313,16 +313,18 @@ void process_instruction()
       //Branch on Less Than Zero and Link
       case BROP_BLTZAL: 
        NEXT_STATE.REGS[31] = CURRENT_STATE.PC + 4;
+       NEXT_STATE.PC = CURRENT_STATE.PC + 4;
        if(CURRENT_STATE.REGS[dcd_rs]<0){
-         NEXT_STATE.PC = CURRENT_STATE.PC + 4 + sign_extend_18b();
+         NEXT_STATE.PC = NEXT_STATE.PC + sign_extend_18b();
         }
       break;
       
       //Branch on Greater Than or Equal to Zero and Link
       case BROP_BGEZAL:
        NEXT_STATE.REGS[31] = CURRENT_STATE.PC + 4;
+       NEXT_STATE.PC = CURRENT_STATE.PC + 4;
        if(CURRENT_STATE.REGS[dcd_rs]>=0){
-         NEXT_STATE.PC = CURRENT_STATE.PC + 4 + sign_extend_18b();
+         NEXT_STATE.PC = NEXT_STATE.PC + sign_extend_18b();
        }
       break;
       }
