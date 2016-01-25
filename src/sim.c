@@ -298,38 +298,34 @@ void process_instruction()
       switch (dcd_rt) {
       //Branch on Less than Zero
       case BROP_BLTZ:  
+       NEXT_STATE.PC = CURRENT_STATE.PC + 4;
        if(CURRENT_STATE.REGS[dcd_rs]<0)
-         NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b();
-       else
-         NEXT_STATE.PC = CURRENT_STATE.PC + 4;
-      break;
+         NEXT_STATE.PC = NEXT_STATE.PC + sign_extend_18b();
+       break;
       
       //Branch if Greater than or equal to Zero
       case BROP_BGEZ:
+       NEXT_STATE.PC = CURRENT_STATE.PC + 4;
        if(CURRENT_STATE.REGS[dcd_rs]>=0)
-         NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b();
-       else
-         NEXT_STATE.PC = CURRENT_STATE.PC + 4;
+         NEXT_STATE.PC = NEXT_STATE.PC + sign_extend_18b();
       break;
       
       //Branch on Less Than Zero and Link
       case BROP_BLTZAL: 
+       NEXT_STATE.PC = CURRENT_STATE.PC + 4;
        if(CURRENT_STATE.REGS[dcd_rs]<0){
-         NEXT_STATE.REGS[31] = CURRENT_STATE.PC + 4;
-         NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b();
+         NEXT_STATE.REGS[31] = NEXT_STATE.PC + 4;
+         NEXT_STATE.PC = NEXT_STATE.PC + sign_extend_18b();
         }
-       else
-         NEXT_STATE.PC = CURRENT_STATE.PC + 4;
       break;
       
       //Branch on Greater Than or Equal to Zero and Link
       case BROP_BGEZAL:
+       NEXT_STATE.PC = CURRENT_STATE.PC + 4;
        if(CURRENT_STATE.REGS[dcd_rs]>=0){
-         NEXT_STATE.REGS[31] = CURRENT_STATE.PC + 4;
-         NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b();
+         NEXT_STATE.REGS[31] = NEXT_STATE.PC + 4;
+         NEXT_STATE.PC = NEXT_STATE.PC + sign_extend_18b();
        }
-       else
-         NEXT_STATE.PC = CURRENT_STATE.PC + 4;
       break;
       }
     }/* special branches */
