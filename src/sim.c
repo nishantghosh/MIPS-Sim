@@ -54,6 +54,11 @@ uint32_t zero_extend_h2w(uint16_t c)
     return ((uint32_t) c);
 }
 
+int sign_extend_18b(uint16_t c)
+{
+  return (((c & 0x8000) ? (c | 0xffff8000) : c) & 0x3ffff);
+}
+
 /*** you may add your own auxiliary functions above this line ***/
 /****************************************************************/
 
@@ -248,19 +253,19 @@ void process_instruction()
       switch (dcd_rt) {
       case BROP_BLTZ:  
        if(dcd_rs<0)
-         NEXT_STATE.PC = CURRENT_STATE.PC + (dcd_imm<<2);
+         NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b(dcd_imm);
        else
          NEXT_STATE.PC = CURRENT_STATE.PC + 4;
       break;
       case BROP_BGEZ:
        if(dcd_rs>=0)
-         NEXT_STATE.PC = CURRENT_STATE.PC + (dcd_imm<<2);
+         NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b(dcd_imm);
        else
          NEXT_STATE.PC = CURRENT_STATE.PC + 4;
       break;
       case BROP_BLTZAL: 
        if(dcd_rs<0){
-         NEXT_STATE.PC = CURRENT_STATE.PC + (dcd_imm<<2);
+         NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b(dcd_imm<<2);
          NEXT_STATE.REGS[31] = CURRENT_STATE.PC + 4;
         }
        else
@@ -268,7 +273,7 @@ void process_instruction()
       break;
       case BROP_BGEZAL:
        if(dcd_rs>=0){
-         NEXT_STATE.PC = CURRENT_STATE.PC + (dcd_imm<<2);
+         NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b(dcd_imm<<2);
          NEXT_STATE.REGS[31] = CURRENT_STATE.PC + 4;
        }
        else
@@ -311,25 +316,25 @@ void process_instruction()
     break;
   case OP_BEQ:
     if (dcd_rs==dcd_rt)
-       NEXT_STATE.PC = CURRENT_STATE.PC + (dcd_imm << 2);
+       NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b(dcd_imm);
     else
        NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
   case OP_BNE:
     if (dcd_rs!=dcd_rt)
-       NEXT_STATE.PC = CURRENT_STATE.PC + (dcd_imm << 2);
+       NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b(dcd_imm);
     else
        NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
   case OP_BLEZ:
     if (dcd_rs<=0)
-       NEXT_STATE.PC = CURRENT_STATE.PC + (dcd_imm << 2);
+       NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b(dcd_imm);
     else
        NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
   case OP_BGTZ:
     if (dcd_rs>0)
-       NEXT_STATE.PC = CURRENT_STATE.PC + (dcd_imm << 2);
+       NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b(dcd_imm);
     else
        NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
@@ -343,7 +348,7 @@ void process_instruction()
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
   case OP_LH:
-      NEXT_STATE.REGS[dcd_rt] = sign_extend_b2w((mem_read_32(CURRENT_STATE.REGS[dcd_rs] + dcd_se_imm)) & 0xFFFF);
+      NEXT_STATE.REGS[dcd_rt] = sign_extend_h2w((mem_read_32(CURRENT_STATE.REGS[dcd_rs] + dcd_se_imm)) & 0xFFFF);
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
   case OP_LW:
