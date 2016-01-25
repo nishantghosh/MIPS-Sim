@@ -380,7 +380,7 @@ void process_instruction()
   case OP_BEQ:
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     if (CURRENT_STATE.REGS[dcd_rs]==CURRENT_STATE.REGS[dcd_rt])
-       NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b();
+       NEXT_STATE.PC = NEXT_STATE.PC + sign_extend_18b();
     break;
   
   //Branch if not equal
