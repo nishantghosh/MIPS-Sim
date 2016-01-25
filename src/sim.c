@@ -56,7 +56,7 @@ uint32_t zero_extend_h2w(uint16_t c)
 
 int sign_extend_18b(uint16_t c)
 {
-  return (((c & 0x8000) ? (c | 0xffff8000) : c) & 0x3ffff);
+  return (((int) c) << 2);
 }
 
 /*** you may add your own auxiliary functions above this line ***/
@@ -101,11 +101,14 @@ void process_instruction()
 	break;
 /*************************************************************/
 /*** specify the remaining dcd_funct cases below this line ***/
+      //AND Operation
       case SUBOP_AND:
        if(dcd_rd!=0)
          NEXT_STATE.REGS[dcd_rd] = CURRENT_STATE.REGS[dcd_rs] & CURRENT_STATE.REGS[dcd_rt];
        NEXT_STATE.PC = CURRENT_STATE.PC + 4;
       break;
+      
+      //DIV Operation
      case SUBOP_DIV:
        if(dcd_rt != 0){
         NEXT_STATE.HI = (int)CURRENT_STATE.REGS[dcd_rs] % (int)CURRENT_STATE.REGS[dcd_rt];
@@ -115,6 +118,8 @@ void process_instruction()
         printf("Division by zero. Value unpredictable");
       NEXT_STATE.PC = CURRENT_STATE.PC + 4;
       break;
+      
+      //Unsigned DIV Operation
      case SUBOP_DIVU:
        if(dcd_rt != 0){
         NEXT_STATE.HI = CURRENT_STATE.REGS[dcd_rs] % CURRENT_STATE.REGS[dcd_rt];
@@ -124,6 +129,8 @@ void process_instruction()
         printf("Division by zero. Value unpredictable");
       NEXT_STATE.PC = CURRENT_STATE.PC + 4;
       break;
+      
+      //Jump and Link Register
      case SUBOP_JALR:
       if(dcd_rd != 0)
         NEXT_STATE.REGS[dcd_rd] = CURRENT_STATE.PC + 8;
@@ -132,6 +139,8 @@ void process_instruction()
       else
         printf(" Address not word aligned ");
      break;
+     
+     //Jump Register
      case SUBOP_JR:
       if(!(CURRENT_STATE.REGS[dcd_rs] & 0x03))
         NEXT_STATE.PC = CURRENT_STATE.REGS[dcd_rs];
@@ -140,93 +149,129 @@ void process_instruction()
         NEXT_STATE.PC = CURRENT_STATE.PC + 4;
       }
      break;
+     
+     //Move from High Register
      case SUBOP_MFHI:
       if(dcd_rd != 0)
        NEXT_STATE.REGS[dcd_rd] = CURRENT_STATE.HI;
       NEXT_STATE.PC = CURRENT_STATE.PC + 4;
      break;
+     
+     //Move from Low register
      case SUBOP_MFLO:
       if(dcd_rd != 0)
        NEXT_STATE.REGS[dcd_rd] = CURRENT_STATE.LO;
       NEXT_STATE.PC = CURRENT_STATE.PC + 4;
      break;
+     
+     //Move to High register
      case SUBOP_MTHI:
       if(dcd_rs != 0)
         NEXT_STATE.HI = CURRENT_STATE.REGS[dcd_rs];
       NEXT_STATE.PC = CURRENT_STATE.PC + 4;
      break;
+     
+     //Move to Low register
      case SUBOP_MTLO:
       if(dcd_rs != 0)
         NEXT_STATE.LO = CURRENT_STATE.REGS[dcd_rs];
       NEXT_STATE.PC = CURRENT_STATE.PC + 4;
      break;
+     
+     //Multiply opration
      case SUBOP_MULT:
       prod = ((int)CURRENT_STATE.REGS[dcd_rs] * (int)CURRENT_STATE.REGS[dcd_rt]);
       NEXT_STATE.HI = (prod >> 31) & 0xFFFFFFFF;
       NEXT_STATE.LO = (prod) & 0xFFFFFFFF;
       NEXT_STATE.PC = CURRENT_STATE.PC + 4;
      break;
+     
+     //Unsigned multiply operation
      case SUBOP_MULTU:
       NEXT_STATE.HI = ((CURRENT_STATE.REGS[dcd_rs] * CURRENT_STATE.REGS[dcd_rt]) >> 31);
       NEXT_STATE.LO = (CURRENT_STATE.REGS[dcd_rs] * CURRENT_STATE.REGS[dcd_rt]) & 0xFFFFFFFF;
       NEXT_STATE.PC = CURRENT_STATE.PC + 4;
      break;
+     
+     //NOR operation
      case SUBOP_NOR:
       if(dcd_rd != 0)
         NEXT_STATE.REGS[dcd_rd] = ~(CURRENT_STATE.REGS[dcd_rs] | CURRENT_STATE.REGS[dcd_rt]);
       NEXT_STATE.PC = CURRENT_STATE.PC + 4;
      break;
+     
+     //OR operation
      case SUBOP_OR:
       if(dcd_rd != 0)
         NEXT_STATE.REGS[dcd_rd] = (CURRENT_STATE.REGS[dcd_rs] | CURRENT_STATE.REGS[dcd_rt]);
       NEXT_STATE.PC = CURRENT_STATE.PC + 4;
      break;
+     
+     //SHift Left logical
      case SUBOP_SLL:
       if(dcd_rd != 0)
         NEXT_STATE.REGS[dcd_rd] = CURRENT_STATE.REGS[dcd_rt] << dcd_shamt;
       NEXT_STATE.PC = CURRENT_STATE.PC + 4;
      break;
+     
+     //Shift Word Left Logical Variable
      case SUBOP_SLLV:
       if(dcd_rd != 0)
         NEXT_STATE.REGS[dcd_rd] = CURRENT_STATE.REGS[dcd_rt] << (CURRENT_STATE.REGS[dcd_rs] & 0x1F);
       NEXT_STATE.PC = CURRENT_STATE.PC + 4;
      break;
+     
+     //Set on Less than
      case SUBOP_SLT:
       if(dcd_rd != 0)
         NEXT_STATE.REGS[dcd_rd] = ((int)CURRENT_STATE.REGS[dcd_rs] < (int)CURRENT_STATE.REGS[dcd_rt]) ? 1 : 0;
       NEXT_STATE.PC = CURRENT_STATE.PC + 4;
      break;
+     
+     //Set on less than unsigned
      case SUBOP_SLTU:
       if(dcd_rd != 0)
         NEXT_STATE.REGS[dcd_rd] = (CURRENT_STATE.REGS[dcd_rs] < CURRENT_STATE.REGS[dcd_rt]) ? 1 : 0;
       NEXT_STATE.PC = CURRENT_STATE.PC + 4;
      break;
+     
+     //Shift right Arithmetic
      case SUBOP_SRA:
       if(dcd_rd != 0)
         NEXT_STATE.REGS[dcd_rd] = (int)CURRENT_STATE.REGS[dcd_rt] >> dcd_shamt;
       NEXT_STATE.PC = CURRENT_STATE.PC + 4;
      break;
+     
+     //Shift Word Right Arithmetic Variable
      case SUBOP_SRAV:
       if(dcd_rd != 0)
         NEXT_STATE.REGS[dcd_rd] = (int)CURRENT_STATE.REGS[dcd_rt] >> (CURRENT_STATE.REGS[dcd_rs] & 0x1F);
       NEXT_STATE.PC = CURRENT_STATE.PC + 4;
      break;
+     
+     //Shift Right Logical
      case SUBOP_SRL:
       if(dcd_rd != 0)
         NEXT_STATE.REGS[dcd_rd] = CURRENT_STATE.REGS[dcd_rt] >> dcd_shamt;
       NEXT_STATE.PC = CURRENT_STATE.PC + 4;
      break;
+     
+     //Shift Right Word logical Variable
      case SUBOP_SRLV:
       if(dcd_rd != 0)
         NEXT_STATE.REGS[dcd_rd] = CURRENT_STATE.REGS[dcd_rt] >> (CURRENT_STATE.REGS[dcd_rs] & 0x1F);
       NEXT_STATE.PC = CURRENT_STATE.PC + 4;
      break;
+     
+     //Subtract
      case SUBOP_SUB:
      case SUBOP_SUBU:
       if(dcd_rd != 0)
         NEXT_STATE.REGS[dcd_rd] = CURRENT_STATE.REGS[dcd_rs] - CURRENT_STATE.REGS[dcd_rt];
       NEXT_STATE.PC = CURRENT_STATE.PC + 4;
      break;
+     
+     //XOR Operation
      case SUBOP_XOR:
       if(dcd_rd != 0)
         NEXT_STATE.REGS[dcd_rd] = CURRENT_STATE.REGS[dcd_rt] ^ CURRENT_STATE.REGS[dcd_rs];
@@ -251,30 +296,37 @@ void process_instruction()
   case OP_BRSPEC: /* special branches */
     {
       switch (dcd_rt) {
+      //Branch on Less than Zero
       case BROP_BLTZ:  
        if(dcd_rs<0)
          NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b(dcd_imm);
        else
          NEXT_STATE.PC = CURRENT_STATE.PC + 4;
       break;
+      
+      //Branch if Greater than or equal to Zero
       case BROP_BGEZ:
        if(dcd_rs>=0)
          NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b(dcd_imm);
        else
          NEXT_STATE.PC = CURRENT_STATE.PC + 4;
       break;
+      
+      //Branch on Less Than Zero and Link
       case BROP_BLTZAL: 
        if(dcd_rs<0){
-         NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b(dcd_imm<<2);
          NEXT_STATE.REGS[31] = CURRENT_STATE.PC + 4;
+         NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b(dcd_imm<<2);
         }
        else
          NEXT_STATE.PC = CURRENT_STATE.PC + 4;
       break;
+      
+      //Branch on Greater Than or Equal to Zero and Link
       case BROP_BGEZAL:
        if(dcd_rs>=0){
-         NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b(dcd_imm<<2);
          NEXT_STATE.REGS[31] = CURRENT_STATE.PC + 4;
+         NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b(dcd_imm<<2);
        }
        else
          NEXT_STATE.PC = CURRENT_STATE.PC + 4;
@@ -282,97 +334,137 @@ void process_instruction()
       }
     }/* special branches */
     break;
+    
+  //Set on Less Than Immediate
   case OP_SLTI:
     if (dcd_rt!=0)
-      NEXT_STATE.REGS[dcd_rt] = (((int) CURRENT_STATE.REGS[dcd_rs] < dcd_se_imm) ? 1 : 0);
+      NEXT_STATE.REGS[dcd_rt] = (((int) CURRENT_STATE.REGS[dcd_rs] < (int) dcd_se_imm) ? 1 : 0);
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
+  
+  //Set on Less Than Immediate Unsigned
   case OP_SLTIU:
     if (dcd_rt!=0)
        NEXT_STATE.REGS[dcd_rt] = ((CURRENT_STATE.REGS[dcd_rs] < dcd_se_imm) ? 1 : 0);
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
+    
+  //AND with immidiate
   case OP_ANDI:
     if (dcd_rt!=0)
        NEXT_STATE.REGS[dcd_rt] = (CURRENT_STATE.REGS[dcd_rs] & zero_extend_h2w(dcd_imm));
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
+  
+  //OR with immidiate
   case OP_ORI:
     if (dcd_rt!=0)
        NEXT_STATE.REGS[dcd_rt] = (CURRENT_STATE.REGS[dcd_rs] | zero_extend_h2w(dcd_imm));
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
+    
+  //XOR with immidiate
   case OP_XORI:
     if (dcd_rt!=0)
        NEXT_STATE.REGS[dcd_rt] = (CURRENT_STATE.REGS[dcd_rs] ^ zero_extend_h2w(dcd_imm));
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
+    
+  //JUMP
   case OP_J:
     NEXT_STATE.PC = (CURRENT_STATE.PC & 0xF0000000) | (dcd_target << 2);
     break;
+    
+  //Jump and Link
   case OP_JAL:
         NEXT_STATE.REGS[31] = CURRENT_STATE.PC + 4;
     NEXT_STATE.PC = (CURRENT_STATE.PC & 0xF0000000) | (dcd_target << 2);
     break;
+    
+  //Branch if Equal
   case OP_BEQ:
-    if (dcd_rs==dcd_rt)
+    if (CURRENT_STATE.REGS[dcd_rs]==CURRENT_STATE.REGS[dcd_rt])
        NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b(dcd_imm);
     else
        NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
+  
+  //Branch if not equal
   case OP_BNE:
-    if (dcd_rs!=dcd_rt)
+    if (CURRENT_STATE.REGS[dcd_rs]!=CURRENT_STATE.REGS[dcd_rt])
        NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b(dcd_imm);
     else
        NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
+    
+  //Branch if less than equal to Zero
   case OP_BLEZ:
-    if (dcd_rs<=0)
+    if (CURRENT_STATE.REGS[dcd_rs]<=0)
        NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b(dcd_imm);
     else
        NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
+    
+  //branch if Greater than Zero
   case OP_BGTZ:
-    if (dcd_rs>0)
+    if (CURRENT_STATE.REGS[dcd_rs]>0)
        NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b(dcd_imm);
     else
        NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
+    
+  //Load Upper Immediate
   case OP_LUI:
-    if (dcd_rt!=0)
+    if (dcd_rs==0)
       NEXT_STATE.REGS[dcd_rt] = (dcd_imm << 16);
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
+  
+  //Load Byte
   case OP_LB:
-      NEXT_STATE.REGS[dcd_rt] = sign_extend_b2w((mem_read_32(CURRENT_STATE.REGS[dcd_rs] + dcd_se_imm)) & 0xFF);
+      NEXT_STATE.REGS[dcd_rt] = sign_extend_b2w((mem_read_32(CURRENT_STATE.REGS[dcd_rs] + (int) dcd_se_imm)) & 0xFF);
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
+    
+  //Load Halfword
   case OP_LH:
-      NEXT_STATE.REGS[dcd_rt] = sign_extend_h2w((mem_read_32(CURRENT_STATE.REGS[dcd_rs] + dcd_se_imm)) & 0xFFFF);
+      NEXT_STATE.REGS[dcd_rt] = sign_extend_h2w((mem_read_32(CURRENT_STATE.REGS[dcd_rs] + (int) dcd_se_imm)) & 0xFFFF);
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
+    
+  //Load Word
   case OP_LW:
-      NEXT_STATE.REGS[dcd_rt] = mem_read_32(CURRENT_STATE.REGS[dcd_rs] + dcd_se_imm);
+      NEXT_STATE.REGS[dcd_rt] = mem_read_32(CURRENT_STATE.REGS[dcd_rs] + (int) dcd_se_imm);
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
+  
+  //Load Byte Unsigned
   case OP_LBU:
-      NEXT_STATE.REGS[dcd_rt] = zero_extend_b2w((mem_read_32(CURRENT_STATE.REGS[dcd_rs] + dcd_se_imm)) & 0xFF);
+      NEXT_STATE.REGS[dcd_rt] = zero_extend_b2w((mem_read_32(CURRENT_STATE.REGS[dcd_rs] + (int) dcd_se_imm)) & 0xFF);
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
+    
+  //Load Halfword Unsigned
   case OP_LHU:
-      NEXT_STATE.REGS[dcd_rt] = zero_extend_h2w((mem_read_32(CURRENT_STATE.REGS[dcd_rs] + dcd_se_imm)) & 0xFFFF);
+      NEXT_STATE.REGS[dcd_rt] = zero_extend_h2w((mem_read_32(CURRENT_STATE.REGS[dcd_rs] + (int) dcd_se_imm)) & 0xFFFF);
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
+  
+  //Store Byte
   case OP_SB:
-      mem_write_32((CURRENT_STATE.REGS[dcd_rs] + dcd_se_imm),(mem_read_32(CURRENT_STATE.REGS[dcd_rt]) & 0xFF));
+      mem_write_32((CURRENT_STATE.REGS[dcd_rs] + (int) dcd_se_imm),(mem_read_32(CURRENT_STATE.REGS[dcd_rt]) & 0xFF));
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
+  
+  //Store Halfword
   case OP_SH:
-      mem_write_32((CURRENT_STATE.REGS[dcd_rs] + dcd_se_imm),(mem_read_32(CURRENT_STATE.REGS[dcd_rt]) & 0xFFFF));
+      mem_write_32((CURRENT_STATE.REGS[dcd_rs] + (int) dcd_se_imm),(mem_read_32(CURRENT_STATE.REGS[dcd_rt]) & 0xFFFF));
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
+  
+  //Store Word
   case OP_SW:
-      mem_write_32((CURRENT_STATE.REGS[dcd_rs] + dcd_se_imm), mem_read_32(CURRENT_STATE.REGS[dcd_rt]));
+      mem_write_32((CURRENT_STATE.REGS[dcd_rs] + (int) dcd_se_imm), mem_read_32(CURRENT_STATE.REGS[dcd_rt]));
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
 
