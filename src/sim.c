@@ -54,7 +54,7 @@ uint32_t zero_extend_h2w(uint16_t c)
     return ((uint32_t) c);
 }
 
-int sign_extend_18b(uint16_t c)
+int sign_extend_18b()
 {
   return (dcd_se_imm << 2);
 }
@@ -299,7 +299,7 @@ void process_instruction()
       //Branch on Less than Zero
       case BROP_BLTZ:  
        if(dcd_rs<0)
-         NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b(dcd_imm);
+         NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b();
        else
          NEXT_STATE.PC = CURRENT_STATE.PC + 4;
       break;
@@ -307,7 +307,7 @@ void process_instruction()
       //Branch if Greater than or equal to Zero
       case BROP_BGEZ:
        if(dcd_rs>=0)
-         NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b(dcd_imm);
+         NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b();
        else
          NEXT_STATE.PC = CURRENT_STATE.PC + 4;
       break;
@@ -316,7 +316,7 @@ void process_instruction()
       case BROP_BLTZAL: 
        if(dcd_rs<0){
          NEXT_STATE.REGS[31] = CURRENT_STATE.PC + 4;
-         NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b(dcd_imm<<2);
+         NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b();
         }
        else
          NEXT_STATE.PC = CURRENT_STATE.PC + 4;
@@ -326,7 +326,7 @@ void process_instruction()
       case BROP_BGEZAL:
        if(dcd_rs>=0){
          NEXT_STATE.REGS[31] = CURRENT_STATE.PC + 4;
-         NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b(dcd_imm<<2);
+         NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b();
        }
        else
          NEXT_STATE.PC = CURRENT_STATE.PC + 4;
@@ -384,7 +384,7 @@ void process_instruction()
   //Branch if Equal
   case OP_BEQ:
     if (CURRENT_STATE.REGS[dcd_rs]==CURRENT_STATE.REGS[dcd_rt])
-       NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b(dcd_imm);
+       NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b();
     else
        NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
@@ -392,7 +392,7 @@ void process_instruction()
   //Branch if not equal
   case OP_BNE:
     if (CURRENT_STATE.REGS[dcd_rs]!=CURRENT_STATE.REGS[dcd_rt])
-       NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b(dcd_imm);
+       NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b();
     else
        NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
@@ -400,7 +400,7 @@ void process_instruction()
   //Branch if less than equal to Zero
   case OP_BLEZ:
     if (CURRENT_STATE.REGS[dcd_rs]<=0)
-       NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b(dcd_imm);
+       NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b();
     else
        NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
@@ -408,7 +408,7 @@ void process_instruction()
   //branch if Greater than Zero
   case OP_BGTZ:
     if (CURRENT_STATE.REGS[dcd_rs]>0)
-       NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b(dcd_imm);
+       NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b();
     else
        NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
