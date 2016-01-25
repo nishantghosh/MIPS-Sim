@@ -298,7 +298,7 @@ void process_instruction()
       switch (dcd_rt) {
       //Branch on Less than Zero
       case BROP_BLTZ:  
-       if(CURRENT_STATE[dcd_rs]<0)
+       if(CURRENT_STATE.REGS[dcd_rs]<0)
          NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b();
        else
          NEXT_STATE.PC = CURRENT_STATE.PC + 4;
@@ -306,7 +306,7 @@ void process_instruction()
       
       //Branch if Greater than or equal to Zero
       case BROP_BGEZ:
-       if(CURRENT_STATE[dcd_rs]>=0)
+       if(CURRENT_STATE.REGS[dcd_rs]>=0)
          NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b();
        else
          NEXT_STATE.PC = CURRENT_STATE.PC + 4;
@@ -314,7 +314,7 @@ void process_instruction()
       
       //Branch on Less Than Zero and Link
       case BROP_BLTZAL: 
-       if(CURRENT_STATE[dcd_rs]<0){
+       if(CURRENT_STATE.REGS[dcd_rs]<0){
          NEXT_STATE.REGS[31] = CURRENT_STATE.PC + 4;
          NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b();
         }
@@ -324,7 +324,7 @@ void process_instruction()
       
       //Branch on Greater Than or Equal to Zero and Link
       case BROP_BGEZAL:
-       if(CURRENT_STATE[dcd_rs]>=0){
+       if(CURRENT_STATE.REGS[dcd_rs]>=0){
          NEXT_STATE.REGS[31] = CURRENT_STATE.PC + 4;
          NEXT_STATE.PC = CURRENT_STATE.PC + sign_extend_18b();
        }
