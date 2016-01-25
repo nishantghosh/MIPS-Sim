@@ -56,7 +56,7 @@ uint32_t zero_extend_h2w(uint16_t c)
 
 int sign_extend_18b(uint16_t c)
 {
-  return (dcd_se_imm << 2)
+  return (dcd_se_imm << 2);
 }
 
 /*** you may add your own auxiliary functions above this line ***/
