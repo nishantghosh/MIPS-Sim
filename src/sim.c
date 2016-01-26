@@ -457,7 +457,7 @@ void process_instruction()
   
   //Store Word
   case OP_SW:
-      mem_write_32((CURRENT_STATE.REGS[dcd_rs] + (int) dcd_se_imm), mem_read_32(CURRENT_STATE.REGS[dcd_rt]));
+      mem_write_32(((CURRENT_STATE.REGS[dcd_rs] + (int) dcd_se_imm) & 0xFFFFFFFC), (int) mem_read_32(CURRENT_STATE.REGS[dcd_rt]));
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
 
