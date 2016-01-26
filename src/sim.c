@@ -312,29 +312,24 @@ void process_instruction()
       
       //Branch on Less Than Zero and Link
       case BROP_BLTZAL:
-       
-      // NEXT_STATE.PC = CURRENT_STATE.PC + 4;
-      // NEXT_STATE.REGS[31] = CURRENT_STATE.PC + 4;
-       if(CURRENT_STATE.REGS[dcd_rs]<0){
+       NEXT_STATE.REGS[31] = CURRENT_STATE.PC + 4;
+       if((int)CURRENT_STATE.REGS[dcd_rs]<0){
          NEXT_STATE.PC = CURRENT_STATE.PC + 4 + sign_extend_18b();
         }
        else {
-       NEXT_STATE.PC = CUURENT_STATE.PC + 4;
+       NEXT_STATE.PC = CURRENT_STATE.PC + 4;
         }
-       NEXT_STATE.REGS[31] = CURRENT_STATE.PC + 4;
       break;
       
       //Branch on Greater Than or Equal to Zero and Link
       case BROP_BGEZAL:
-       //NEXT_STATE.PC = CURRENT_STATE.PC + 4;
-       //NEXT_STATE.REGS[31] = CURRENT_STATE.PC + 4;
-       if(CURRENT_STATE.REGS[dcd_rs]>=0){
+       NEXT_STATE.REGS[31] = CURRENT_STATE.PC + 4;
+       if((int)CURRENT_STATE.REGS[dcd_rs]>=0){
          NEXT_STATE.PC = CURRENT_STATE.PC + 4 + sign_extend_18b();
        }
        else {
        NEXT_STATE.PC = CURRENT_STATE.PC + 4;
         }
-       NEXT_STATE.REGS[31] = CURRENT_STATE.PC + 4;
       break;
       }
     }/* special branches */
