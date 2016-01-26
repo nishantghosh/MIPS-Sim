@@ -299,37 +299,33 @@ void process_instruction()
       //Branch on Less than Zero
       case BROP_BLTZ:  
        NEXT_STATE.PC = CURRENT_STATE.PC + 4;
-       if(CURRENT_STATE.REGS[dcd_rs]<0)
+       if((int) CURRENT_STATE.REGS[dcd_rs]<0)
          NEXT_STATE.PC = NEXT_STATE.PC + sign_extend_18b();
        break;
       
       //Branch if Greater than or equal to Zero
       case BROP_BGEZ:
        NEXT_STATE.PC = CURRENT_STATE.PC + 4;
-       if(CURRENT_STATE.REGS[dcd_rs]>=0)
+       if((int) CURRENT_STATE.REGS[dcd_rs]>=0)
          NEXT_STATE.PC = NEXT_STATE.PC + sign_extend_18b();
       break;
       
       //Branch on Less Than Zero and Link
       case BROP_BLTZAL:
        NEXT_STATE.REGS[31] = CURRENT_STATE.PC + 4;
-       if((int)CURRENT_STATE.REGS[dcd_rs]< 0){
+       if((int) CURRENT_STATE.REGS[dcd_rs]< 0)
          NEXT_STATE.PC = CURRENT_STATE.PC + 4 + sign_extend_18b();
-        }
-       else {
-       NEXT_STATE.PC = CURRENT_STATE.PC + 4;
-        }
+       else 
+         NEXT_STATE.PC = CURRENT_STATE.PC + 4;
       break;
       
       //Branch on Greater Than or Equal to Zero and Link
       case BROP_BGEZAL:
        NEXT_STATE.REGS[31] = CURRENT_STATE.PC + 4;
-       if((int)CURRENT_STATE.REGS[dcd_rs]>= 0){
+       if((int)CURRENT_STATE.REGS[dcd_rs]>= 0)
          NEXT_STATE.PC = CURRENT_STATE.PC + 4 + sign_extend_18b();
-       }
-       else {
-       NEXT_STATE.PC = CURRENT_STATE.PC + 4;
-        }
+       else
+         NEXT_STATE.PC = CURRENT_STATE.PC + 4;
       break;
       }
     }/* special branches */
@@ -413,51 +409,49 @@ void process_instruction()
   
   //Load Byte
   case OP_LB:
-      NEXT_STATE.REGS[dcd_rt] = sign_extend_b2w((mem_read_32(CURRENT_STATE.REGS[dcd_rs] + (int)dcd_se_imm)) & 0xFF);
+      NEXT_STATE.REGS[dcd_rt] = sign_extend_b2w((mem_read_32(CURRENT_STATE.REGS[dcd_rs] + dcd_se_imm)) & 0xFF);
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
     
   //Load Halfword
   case OP_LH:
-      NEXT_STATE.REGS[dcd_rt] = sign_extend_h2w((mem_read_32(CURRENT_STATE.REGS[dcd_rs] + (int)dcd_se_imm)) & 0xFFFF);
+      NEXT_STATE.REGS[dcd_rt] = sign_extend_h2w((mem_read_32(CURRENT_STATE.REGS[dcd_rs] + dcd_se_imm)) & 0xFFFF);
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
     
   //Load Word
   case OP_LW:
-      //temp = CURRENT_STATE.REGS[dcd_rs] + (int)dcd_se_imm;
-      //temp = temp & 0xFFFFFFFC;
-      NEXT_STATE.REGS[dcd_rt] = mem_read_32((CURRENT_STATE.REGS[dcd_rs] + (int)dcd_se_imm) & 0xFFFFFFFC);
+      NEXT_STATE.REGS[dcd_rt] = mem_read_32((CURRENT_STATE.REGS[dcd_rs] + dcd_se_imm));
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
   
   //Load Byte Unsigned
   case OP_LBU:
-      NEXT_STATE.REGS[dcd_rt] = zero_extend_b2w((mem_read_32(CURRENT_STATE.REGS[dcd_rs] + (int)dcd_se_imm)) & 0xFF);
+      NEXT_STATE.REGS[dcd_rt] = zero_extend_b2w((mem_read_32(CURRENT_STATE.REGS[dcd_rs] + dcd_se_imm)) & 0xFF);
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
     
   //Load Halfword Unsigned
   case OP_LHU:
-      NEXT_STATE.REGS[dcd_rt] = zero_extend_h2w((mem_read_32(CURRENT_STATE.REGS[dcd_rs] + (int)dcd_se_imm)) & 0xFFFF);
+      NEXT_STATE.REGS[dcd_rt] = zero_extend_h2w((mem_read_32(CURRENT_STATE.REGS[dcd_rs] + dcd_se_imm)) & 0xFFFF);
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
   
   //Store Byte
   case OP_SB:
-      mem_write_32((CURRENT_STATE.REGS[dcd_rs] + (int) dcd_se_imm),((CURRENT_STATE.REGS[dcd_rt]) & 0xFF));
+      mem_write_32((CURRENT_STATE.REGS[dcd_rs] + dcd_se_imm), (int) ((CURRENT_STATE.REGS[dcd_rt]) & 0xFF));
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
   
   //Store Halfword
   case OP_SH:
-      mem_write_32((CURRENT_STATE.REGS[dcd_rs] + (int) dcd_se_imm),((CURRENT_STATE.REGS[dcd_rt]) & 0xFFFF));
+      mem_write_32((CURRENT_STATE.REGS[dcd_rs] + dcd_se_imm), (int) ((CURRENT_STATE.REGS[dcd_rt]) & 0xFFFF));
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
   
   //Store Word
   case OP_SW:
-      mem_write_32(((CURRENT_STATE.REGS[dcd_rs] + (int) dcd_se_imm) & 0xFFFFFFFC), (int) (CURRENT_STATE.REGS[dcd_rt]));
+      mem_write_32((CURRENT_STATE.REGS[dcd_rs] + dcd_se_imm), (int) ((CURRENT_STATE.REGS[dcd_rt])));
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
 
