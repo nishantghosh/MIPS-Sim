@@ -445,19 +445,19 @@ void process_instruction()
   
   //Store Byte
   case OP_SB:
-      mem_write_32((CURRENT_STATE.REGS[dcd_rs] + (int) dcd_se_imm),(mem_read_32(CURRENT_STATE.REGS[dcd_rt]) & 0xFF));
+      mem_write_32((CURRENT_STATE.REGS[dcd_rs] + (int) dcd_se_imm),((CURRENT_STATE.REGS[dcd_rt]) & 0xFF));
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
   
   //Store Halfword
   case OP_SH:
-      mem_write_32((CURRENT_STATE.REGS[dcd_rs] + (int) dcd_se_imm),(mem_read_32(CURRENT_STATE.REGS[dcd_rt]) & 0xFFFF));
+      mem_write_32((CURRENT_STATE.REGS[dcd_rs] + (int) dcd_se_imm),((CURRENT_STATE.REGS[dcd_rt]) & 0xFFFF));
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
   
   //Store Word
   case OP_SW:
-      mem_write_32(((CURRENT_STATE.REGS[dcd_rs] + (int) dcd_se_imm) & 0xFFFFFFFC), (int) mem_read_32(CURRENT_STATE.REGS[dcd_rt]));
+      mem_write_32(((CURRENT_STATE.REGS[dcd_rs] + (int) dcd_se_imm) & 0xFFFFFFFC), (int) (CURRENT_STATE.REGS[dcd_rt]));
     NEXT_STATE.PC = CURRENT_STATE.PC + 4;
     break;
 
