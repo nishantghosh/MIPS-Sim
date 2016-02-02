@@ -1,8 +1,3 @@
-18-447 Lab 1a, Spring 2016.  
-
-For this lab, you will be completing a functional simulator of a subset of MIPS.
-Please see the lab handout for details.
-
 
 /*** Files ***/
 
@@ -18,10 +13,6 @@ Please see the lab handout for details.
 
 /*** Instructions ***/
 
-1. You are to complete the process_instruction() function in sim.c to implement
-the MIPS instructions specified in the lab handout. The starter code
-already implements: addi, addiu, add, addu and syscall. Go ahead
-and try it out. 
 
 Run "make" to compile the simulator.
 
